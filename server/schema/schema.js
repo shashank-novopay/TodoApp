@@ -7,7 +7,8 @@ const {
   GraphQLInt,
   GraphQLSchema,
   GraphQLID,
-  GraphQLList
+  GraphQLList,
+  GraphQLNonNull
 
 } = graphql;
 
@@ -29,13 +30,13 @@ const RootQuery = new GraphQLObjectType({
       type : TodoType,
       args: {id: {type:GraphQLID}},
       resolve(parent,args){
-      
+        return Todo.findById(args.id);
       }
     },
     todos: {
       type: new GraphQLList(TodoType),
       resolve(parent,args){
-
+        return Todo.find({})
       }
     }
   }
@@ -48,13 +49,13 @@ const Mutation = new GraphQLObjectType({
     addTodo:{
       type: TodoType,
       args: {
-        name: {type: GraphQLString},
+        name: {type: new GraphQLNonNull(GraphQLString)},
         isDeleted: {type: GraphQLInt}
       },
       resolve(parent,args){
         let todo = new Todo({
           name:args.name,
-          isDeleted:0
+          isDeleted: 0
         });
         return todo.save();
       }
